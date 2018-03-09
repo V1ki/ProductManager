@@ -110,7 +110,9 @@ class OrderController extends Controller
             $form->select('customer_id',trans('order.customer_id')) -> load('dev_model_id','/api/dev_model');
 
             // 从api中获取数据
-            $this ->load($form->select('dev_model_id',trans('order.dev_model_id')),'soft_version','hardware_version','/api/model_versions') ;
+            $select = $form->select('dev_model_id',trans('order.dev_model_id')) ;
+
+            $this ->load($select,'soft_version','hardware_version','/api/model_versions') ;
 
             //-> load('hardware_version','/api/model_hardware_versions')
             $form->select('soft_version',trans('order.soft_version'))->rules('required');
@@ -180,7 +182,7 @@ class OrderController extends Controller
 
 
 
-    private function load($select ,$field,$field1, $sourceUrl, $textField = 'soft', $textField1= 'hardware'){
+    private function load(Form\Field\Select $select ,$field,$field1, $sourceUrl, $textField = 'soft', $textField1= 'hardware'){
 
         $script = <<<EOT
 $(document).off('change', "{$select->getElementClassSelector()}");
