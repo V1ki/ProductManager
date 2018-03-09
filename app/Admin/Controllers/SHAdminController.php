@@ -34,17 +34,17 @@ class SHAdminController extends Controller
     /**
      * Edit interface.
      *
-     * @param $id
+     * @param $sh_name_id
      * @return Content
      */
-    public function edit($id)
+    public function edit($sh_name_id)
     {
-        return Admin::content(function (Content $content) use ($id) {
+        return Admin::content(function (Content $content) use ($sh_name_id) {
 
             $content->header(trans('device.edit_device'));
             $content->description(trans('device.edit_device_desc'));
 
-            $content->body($this->form()->edit($id));
+            $content->body($this->form()->edit($sh_name_id));
         });
     }
 
