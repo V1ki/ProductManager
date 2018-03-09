@@ -18,4 +18,7 @@
  *
  */
 
+use Encore\Admin\Form;
+
 Encore\Admin\Form::forget(['map', 'editor']);
+Form::extend('customSelect', CustomSelect::class);
