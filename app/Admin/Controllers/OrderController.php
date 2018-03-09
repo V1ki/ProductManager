@@ -3,7 +3,6 @@
 namespace App\Admin\Controllers;
 
 use App\Device;
-use App\DevModel;
 use App\Order;
 
 use Encore\Admin\Form;
@@ -12,7 +11,6 @@ use Encore\Admin\Facades\Admin;
 use Encore\Admin\Layout\Content;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\ModelForm;
-use Illuminate\Support\MessageBag;
 
 class OrderController extends Controller
 {
@@ -110,7 +108,7 @@ class OrderController extends Controller
             $form->select('customer_id',trans('order.customer_id')) -> load('dev_model_id','/api/dev_model');
 
             // 从api中获取数据
-            $form->customselect('dev_model_id',trans('order.dev_model_id')) ->cusLoad('soft_version','hardware_version','/api/model_versions') ;
+            $form->select('dev_model_id',trans('order.dev_model_id')) ->load('soft_version','/api/model_versions','soft','soft') ;
 
             //-> load('hardware_version','/api/model_hardware_versions')
             $form->select('soft_version',trans('order.soft_version'))->rules('required');
