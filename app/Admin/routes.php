@@ -15,5 +15,5 @@ Route::group([
     $router->resource('devices',DeviceController::class);
     $router->resource('devModels',DevModelController::class);
 
-
+    $router->resource('shAdmins',SHAdminController::class);
 });
