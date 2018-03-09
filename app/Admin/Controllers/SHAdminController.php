@@ -73,7 +73,9 @@ class SHAdminController extends Controller
     {
         return Admin::grid(SHAdmin::class, function (Grid $grid) {
 
+            $grid->column('sh_name_id',trans('sh_admin.sh_name_id'));
             $grid->column('sh_name',trans('sh_admin.sh_name'));
+            $grid->column('sh_user_name',trans('sh_admin.sh_user_name'));
 
         });
     }
