@@ -114,7 +114,7 @@ class OrderController extends Controller
 
             $form->select('soft_version',trans('order.soft_version'))->rules('required');
 
-            $form->text('hardware_version',trans('order.hardware_version'))->rules('required');
+            $form->select('hardware_version',trans('order.hardware_version'))->rules('required');
 
             $lastImei = str_pad_dechex_0(Device::orderBy('imei1','desc')->value('imei1') + 1,15) ;
 
