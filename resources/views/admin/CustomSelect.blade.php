@@ -4,7 +4,6 @@
 
     <div class="{{$viewClass['field']}}">
 
-        @include('admin::form.error')
 
         <input type="hidden" name="{{$name}}"/>
 
@@ -25,7 +24,6 @@
             @endif
         </select>
 
-        @include('admin::form.help-block')
 
     </div>
 </div>
