@@ -18,7 +18,7 @@
  *
  */
 
-use App\Admin\Extensions\CustomSelect;
+use App\Admin\Extensions\Form\CustomSelect;
 use Encore\Admin\Form;
 
 Encore\Admin\Form::forget(['map', 'editor']);

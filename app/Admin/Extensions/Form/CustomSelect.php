@@ -6,7 +6,7 @@
  * Time: 下午7:06
  */
 
-namespace App\Admin\Extensions;
+namespace App\Admin\Extensions\Form;
 
 
 use Encore\Admin\Facades\Admin;
