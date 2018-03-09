@@ -38,7 +38,7 @@ class Controller extends BaseController
     // 获取设备型号的 软件版本号
     public function model_versions(Request $request) {
         $id = $request->get('q');
-        return UpgradePackage::where('dev_model_id',$id)->get([DB::raw('package_id as id'),DB::raw('package_version as soft'),DB::raw('package_hwver as hardware')]);
+        return UpgradePackage::where('dev_model_id',$id)->get([DB::raw('package_id as id'),DB::raw('package_version as soft'),DB::raw('package_hwver as hardware')]) ->unique("soft");
     }
     // 获取设备型号的 硬件版本号
     public function model_hardware_versions(Request $request) {

@@ -111,8 +111,8 @@ class OrderController extends Controller
             $form->select('dev_model_id',trans('order.dev_model_id')) ->load('soft_version','/api/model_versions','soft','soft') ;
 
             //-> load('hardware_version','/api/model_hardware_versions')
-            $form->select('soft_version',trans('order.soft_version'))->rules('required');
 
+            $form->select('soft_version',trans('order.soft_version')) ->rules('required');
 
             $form->select('hardware_version',trans('order.hardware_version'))->rules('required');
 
