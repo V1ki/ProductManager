@@ -22,4 +22,4 @@ use App\Admin\Extensions\Form\CustomSelect;
 use Encore\Admin\Form;
 
 Encore\Admin\Form::forget(['map', 'editor']);
-Form::extend('customSelect', CustomSelect::class);
+Form::extend('customselect', CustomSelect::class);
