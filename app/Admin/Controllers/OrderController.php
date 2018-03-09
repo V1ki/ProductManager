@@ -110,7 +110,7 @@ class OrderController extends Controller
             $form->select('customer_id',trans('order.customer_id')) -> load('dev_model_id','/api/dev_model');
 
             // 从api中获取数据
-            $form->select('dev_model_id',trans('order.dev_model_id'))-> load('soft_version','/api/model_versions') ;
+            $form->select('dev_model_id',trans('order.dev_model_id'))-> load('soft_version','/api/model_soft_versions') -> load('hardware_version','/api/model_hardware_versions') ;
 
             $form->select('soft_version',trans('order.soft_version'))->rules('required');
 

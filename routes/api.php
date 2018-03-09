@@ -24,4 +24,7 @@ Route::get('/customer', 'Controller@customer');
 Route::get('/dev_model', 'Controller@dev_model');
 
 /// 获取 设备型号 中的软件版本
-Route::get('/model_versions', 'Controller@model_versions');
+Route::get('/model_soft_versions', 'Controller@model_soft_versions');
+
+/// 获取 设备型号 中的硬件版本
+Route::get('/model_hardware_versions', 'Controller@model_hardware_versions');
