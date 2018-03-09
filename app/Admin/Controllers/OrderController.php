@@ -110,10 +110,12 @@ class OrderController extends Controller
             $form->select('customer_id',trans('order.customer_id')) -> load('dev_model_id','/api/dev_model');
 
             // 从api中获取数据
-            $form->select('dev_model_id',trans('order.dev_model_id'))-> load('soft_version','/api/model_soft_versions')  ;
+            $this ->load($form->select('dev_model_id',trans('order.dev_model_id')),'soft_version','hardware_version','/api/model_versions') ;
 
             //-> load('hardware_version','/api/model_hardware_versions')
             $form->select('soft_version',trans('order.soft_version'))->rules('required');
+
+
 
             $form->select('hardware_version',trans('order.hardware_version'))->rules('required');
 
@@ -176,6 +178,40 @@ class OrderController extends Controller
         });
     }
 
+
+
+    private function load($select ,$field,$field1, $sourceUrl, $textField = 'soft', $textField1= 'hardware'){
+
+        $script = <<<EOT
+$(document).off('change', "{$select->getElementClassSelector()}");
+$(document).on('change', "{$select->getElementClassSelector()}", function () {
+    var target = $(this).closest('.fields-group').find(".$field");
+    var target1 = $(this).closest('.fields-group').find(".$field1");
+    
+    $.get("$sourceUrl?q="+this.value, function (data) {
+   
+        target.find("option").remove();
+        $(target).select2({
+            data: $.map(data, function (d) {
+//                d.id = d.$textField;
+                d.text = d.$textField;
+                return d;
+            })
+        }).trigger('change');
+        $(target1).select2({
+            data: $.map(data, function (d) {
+//                d.id = d.$textField1;
+                d.text = d.$textField1;
+                return d;
+            })
+        }).trigger('change');
+    });
+});
+EOT;
+
+        Admin::script($script);
+
+    }
 
 
     private function generateMac($start , $index = 0){

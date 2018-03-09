@@ -36,9 +36,9 @@ class Controller extends BaseController
         return DevModel::where('customer_id',$id)->get([DB::raw('dev_model_id as id'),DB::raw('dev_model_name as text')]);
     }
     // 获取设备型号的 软件版本号
-    public function model_soft_versions(Request $request) {
+    public function model_versions(Request $request) {
         $id = $request->get('q');
-        return UpgradePackage::where('dev_model_id',$id)->get([DB::raw('package_id as id'),DB::raw('package_version as text')]);
+        return UpgradePackage::where('dev_model_id',$id)->get([DB::raw('package_id as id'),DB::raw('package_version as soft'),DB::raw('package_hwver as hardware')]);
     }
     // 获取设备型号的 硬件版本号
     public function model_hardware_versions(Request $request) {
