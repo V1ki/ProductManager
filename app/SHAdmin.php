@@ -16,5 +16,6 @@ class SHAdmin extends Model
 
     protected $table = 'admin_sh_name' ;
 
+    protected $primaryKey = 'sh_name_id';
 
 }
