@@ -77,6 +77,15 @@ class CustomersController extends Controller
             $grid->column('customer_name',trans('customers.customer_name'));
             $grid->column('sh_name_id',trans('customers.sh_name_id'));
 
+            $grid->filter(function($filter){
+
+                // 去掉默认的id过滤器
+                $filter->disableIdFilter();
+
+                // 在这里添加字段过滤器
+                $filter->like('customer_name', 'customer_name');
+
+            });
         });
     }
 
