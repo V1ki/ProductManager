@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DevModel;
+use App\UpgradePackage;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
@@ -31,6 +32,11 @@ class Controller extends BaseController
         // `customer_id`,`customer_name`
         $id = $request->get('q');
         return DevModel::where('dev_model_id',$id)->get([DB::raw('dev_model_id as id'),DB::raw('dev_model_name as text')]);
+    }
+
+    public function model_versions(Request $request) {
+        $id = $request->get('q');
+        return UpgradePackage::where('dev_model_id',$id)->get([DB::raw('package_id as id'),DB::raw('package_version as text')]);
     }
 
 }
