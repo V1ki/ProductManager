@@ -80,11 +80,11 @@ class DevModelController extends Controller
     {
         return Admin::grid(DevModel::class, function (Grid $grid) {
 
-            $grid->column('name',trans('device.model_name'));
-            $grid->column('type',trans('device.model_type')) -> display(function($type){
+            $grid->column('dev_model_name',trans('device.model_name'));
+            $grid->column('dev_model_type',trans('device.model_type')) -> display(function($type){
                 return $type == 1 ? trans('device.model_type_android') : trans('device.model_type_not_android');
             });
-            $grid->column('customer_name',trans('device.model_customer_name'));
+            $grid->column('customer_id',trans('device.model_customer_name'));
         });
     }
 
