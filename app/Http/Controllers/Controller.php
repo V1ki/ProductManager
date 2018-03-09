@@ -31,7 +31,7 @@ class Controller extends BaseController
     public function dev_model(Request $request){
         // `customer_id`,`customer_name`
         $id = $request->get('q');
-        return DevModel::where('dev_model_id',$id)->get([DB::raw('dev_model_id as id'),DB::raw('dev_model_name as text')]);
+        return DevModel::where('customer_id',$id)->get([DB::raw('dev_model_id as id'),DB::raw('dev_model_name as text')]);
     }
 
     public function model_versions(Request $request) {
