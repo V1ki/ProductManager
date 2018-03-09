@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+// `dev_model_id`,`dev_model_name`,`dev_model_type`,`customer_id`,`sh_name_id`
 class DevModel extends Model
 {
     protected $table = "device_models";

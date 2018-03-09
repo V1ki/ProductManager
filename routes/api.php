@@ -17,5 +17,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return \App\DevModel::all();
 });
 
-Route::get('/dev_models', 'DevModelController@all');
-Route::get('/lastWifiMac', 'DeviceController@lastWifiMac');
+Route::get('/allSHInfos', 'Controller@allSHInfos');
+
+Route::get('/customer', 'Controller@customer');

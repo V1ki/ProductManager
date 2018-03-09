@@ -7,7 +7,21 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+use App\SHAdmin ;
+use App\Customers ;
+use Illuminate\Support\Facades\DB;
+
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    public function allSHInfos(){
+        return SHAdmin::get([DB::raw('sh_name_id as id'),DB::raw('sh_name as text')]);
+    }
+
+    public function customer($id){
+        // `customer_id`,`customer_name`
+        return Customers::where('sh_name_id',$id)->get([DB::raw('customer_id as id'),DB::raw('customer_name as text')]);
+    }
+
 }

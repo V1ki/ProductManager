@@ -82,7 +82,7 @@ class DevModelController extends Controller
 
             $grid->column('dev_model_name',trans('device.model_name'));
             $grid->column('dev_model_type',trans('device.model_type')) -> display(function($type){
-                return $type == 1 ? trans('device.model_type_android') : trans('device.model_type_not_android');
+                return $type == 2 ? trans('device.model_type_android') : trans('device.model_type_not_android');
             });
             $grid->column('customer_id',trans('device.model_customer_name'));
         });

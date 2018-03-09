@@ -104,8 +104,13 @@ class OrderController extends Controller
 
             $form->date('order_time',trans('order.order_time'));
 
+
+            $form->select('sh_name_id',trans('order.sh_name_id')) -> options('/api/allSHInfos') -> load('customer_id','/api/customer');
+
+            $form->select('customer_id',trans('order.customer_id')) -> load('dev_model_id','/api/dev_model');
+
             // 从api中获取数据
-            $form->select('dev_model_id',trans('order.dev_model_id')) ->options('/api/dev_models')->rules('required');
+            $form->select('dev_model_id',trans('order.dev_model_id')) ;
 
             $form->text('soft_version',trans('order.soft_version'))->rules('required');
 

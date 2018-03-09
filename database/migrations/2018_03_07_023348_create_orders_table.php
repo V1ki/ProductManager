@@ -23,6 +23,10 @@ class CreateOrdersTable extends Migration
             $table->string('hardware_version', 50);
             // 订单数量
             $table->integer('sum');
+            // 商户 id
+            $table->string('sh_name_id', 50);
+            // 客户 id
+            $table->string('customer_id', 50);
             // 设备型号
             $table->string('dev_model_id', 50);
             // imei 起始
@@ -31,6 +35,8 @@ class CreateOrdersTable extends Migration
             $table->string('mac_wifi_start', 50);
             // 蓝牙 mac 地址 起始
             $table->string('mac_bluetooth_start', 50);
+
+
             // 订单下达时间
             $table->timestamp('order_time');
             // 订单 状态 入库、发货、
