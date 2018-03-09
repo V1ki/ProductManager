@@ -2,7 +2,7 @@
 
 namespace App\Admin\Controllers;
 
-use App\SHAdmin ;
+use App\Customers ;
 
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -71,7 +71,7 @@ class CustomersController extends Controller
      */
     protected function grid()
     {
-        return Admin::grid(SHAdmin::class, function (Grid $grid) {
+        return Admin::grid(Customers::class, function (Grid $grid) {
 
             $grid->column('customer_id',trans('customers.customer_id'));
             $grid->column('customer_name',trans('customers.customer_name'));
@@ -87,7 +87,7 @@ class CustomersController extends Controller
      */
     protected function form()
     {
-        return Admin::form(SHAdmin::class, function (Form $form) {
+        return Admin::form(Customers::class, function (Form $form) {
             $form->display('customer_name',trans('customers.customer_name'));
         });
     }
