@@ -11,7 +11,7 @@ use Encore\Admin\Layout\Content;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\ModelForm;
 
-class SHAdminController extends Controller
+class CustomersController extends Controller
 {
     use ModelForm;
 
@@ -24,8 +24,8 @@ class SHAdminController extends Controller
     {
         return Admin::content(function (Content $content) {
 
-            $content->header(trans('sh_admin.sh_admin_list'));
-            $content->description(trans('sh_admin.sh_admin_list_desc'));
+            $content->header(trans('customers.customers_list'));
+            $content->description(trans('customers.customers_list_desc'));
 
             $content->body($this->grid());
         });
@@ -41,8 +41,8 @@ class SHAdminController extends Controller
     {
         return Admin::content(function (Content $content) use ($id) {
 
-            $content->header(trans('sh_admin.edit_sh_admin'));
-            $content->description(trans('sh_admin.edit_sh_admin'));
+            $content->header(trans('customers.edit_customers'));
+            $content->description(trans('customers.edit_customers'));
 
             $content->body($this->form()->edit($id));
         });
@@ -57,8 +57,8 @@ class SHAdminController extends Controller
     {
         return Admin::content(function (Content $content) {
 
-            $content->header(trans('sh_admin.create_sh_admin'));
-            $content->description(trans('sh_admin.create_sh_admin'));
+            $content->header(trans('customers.create_customers'));
+            $content->description(trans('customers.create_customers'));
 
             $content->body($this->form());
         });
@@ -73,9 +73,9 @@ class SHAdminController extends Controller
     {
         return Admin::grid(SHAdmin::class, function (Grid $grid) {
 
-            $grid->column('sh_name_id',trans('sh_admin.sh_name_id'));
-            $grid->column('sh_name',trans('sh_admin.sh_name'));
-            $grid->column('sh_user_name',trans('sh_admin.sh_user_name'));
+            $grid->column('customer_id',trans('customers.customer_id'));
+            $grid->column('customer_name',trans('customers.customer_name'));
+            $grid->column('sh_name_id',trans('customers.sh_name_id'));
 
         });
     }
@@ -88,7 +88,7 @@ class SHAdminController extends Controller
     protected function form()
     {
         return Admin::form(SHAdmin::class, function (Form $form) {
-            $form->display('sh_name',trans('sh_admin.sh_name'));
+            $form->display('customer_name',trans('customers.customer_name'));
         });
     }
 }

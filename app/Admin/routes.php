@@ -16,4 +16,5 @@ Route::group([
     $router->resource('devModels',DevModelController::class);
 
     $router->resource('shAdmins',SHAdminController::class);
+    $router->resource('customers',CustomersController::class);
 });
