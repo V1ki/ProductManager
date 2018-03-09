@@ -19,4 +19,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('/allSHInfos', 'Controller@allSHInfos');
 
-Route::get('/customer/{id}', 'Controller@customer');
+Route::get('/customer', 'Controller@customer');

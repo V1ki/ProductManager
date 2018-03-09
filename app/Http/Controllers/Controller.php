@@ -19,8 +19,9 @@ class Controller extends BaseController
         return SHAdmin::get([DB::raw('sh_name_id as id'),DB::raw('sh_name as text')]);
     }
 
-    public function customer($id){
+    public function customer(Request $request){
         // `customer_id`,`customer_name`
+        $id = $request->get('q');
         return Customers::where('sh_name_id',$id)->get([DB::raw('customer_id as id'),DB::raw('customer_name as text')]);
     }
 
