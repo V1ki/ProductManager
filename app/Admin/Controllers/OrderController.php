@@ -10,7 +10,7 @@ use Encore\Admin\Grid;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Layout\Content;
 use App\Http\Controllers\Controller;
-use Encore\Admin\Controllers\Orders\ModelForm;
+use Encore\Admin\Controllers\ModelForm;
 
 class OrderController extends Controller
 {
@@ -149,7 +149,7 @@ class OrderController extends Controller
     {
         $nums = explode(":", $start);
         if ($nums || $nums->sum != 4) {
-            $nums = [0x00, 0x00, 0x00, 0x00];
+            $nums = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
         }
 
         // 取出 每一位 并转换成 十进制
@@ -203,7 +203,7 @@ class OrderController extends Controller
     private function generateIMEI($model_num)
     {
         $a = '865' . str_pad($model_num, 2, '0', STR_PAD_LEFT) . '1';
-        $b = gmstrftime('YYWW');
+        $b = gmstrftime('%g%W');
         $c = '0001';
         /*
         * IMEI校验码算法：
@@ -216,12 +216,12 @@ class OrderController extends Controller
 
         $d = 0 ;
 
-        for ($i = 0 ; $i < $array->count; $i ++ ){
+        for ($i = 0 ; $i < count($array); $i ++ ){
             $value_i = $array[$i] ;
             $i++ ;
             $temp = $value_i * 2 ;
             $temp = $temp < 10 ? $temp : $temp-9;
-            $d += $value_i+b;
+            $d += $value_i+$temp;
         }
         $d %= 10 ;
         $d = $d==0 ? 0:10-$d;

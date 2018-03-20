@@ -20,7 +20,7 @@ trait ModelForm
      */
     public function show($id)
     {
-        admin_toastr('laravel-admin 提示','success');
+        //admin_toastr('laravel-admin 提示','success');
         return $this->edit($id);
     }
 
