@@ -10,7 +10,7 @@ use Encore\Admin\Grid;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Layout\Content;
 use App\Http\Controllers\Controller;
-use Encore\Admin\Controllers\ModelForm;
+use Encore\Admin\Controllers\Orders\ModelForm;
 
 class OrderController extends Controller
 {
@@ -74,10 +74,11 @@ class OrderController extends Controller
     {
         return Admin::grid(Order::class, function (Grid $grid) {
 
-            $grid->column('number',trans('order.number'))->sortable();
-            $grid->column('sum',trans('order.sum'))->sortable();
-            $grid->column('dev_model_id',trans('order.dev_model_id'))->sortable();
-            $grid->column('created_at',trans('admin.created_at'))->sortable();
+            $grid->column('number', trans('order.number'))->sortable();
+            $grid->column('sum', trans('order.sum'))->sortable();
+            $grid->column('dev_model_id', trans('order.dev_model_id'))->sortable();
+            $grid->column('created_at', trans('admin.created_at'))->sortable();
+
 
         });
     }
@@ -91,153 +92,149 @@ class OrderController extends Controller
     {
         return Admin::form(Order::class, function (Form $form) {
 
-            $form->model()->number = time();
+            $form->model()->number = gmstrftime('YYWW').'0001';
             $form->model()->status = 1;
 
             $form->display('number', trans('order.number'))->value($form->model()->number);
 
 
-
             $form->number('sum', trans('order.sum'))->rules('required');
 
-            $form->date('order_time',trans('order.order_time'));
+            $form->date('order_time', trans('order.order_time'));
 
 
-            $form->select('sh_name_id',trans('order.sh_name_id')) -> options('/api/allSHInfos') -> load('customer_id','/api/customer');
+            $form->select('sh_name_id', trans('order.sh_name_id'))->options('/api/allSHInfos')->load('customer_id', '/api/customer');
 
-            $form->select('customer_id',trans('order.customer_id')) -> load('dev_model_id','/api/dev_model');
+            $form->select('customer_id', trans('order.customer_id'))->load('dev_model_id', '/api/dev_model');
 
             // 从api中获取数据
-            $form->select('dev_model_id',trans('order.dev_model_id')) ->load('soft_version','/api/model_versions','soft','soft') ;
+            $form->select('dev_model_id', trans('order.dev_model_id'))->load('soft_version', '/api/model_versions', 'soft', 'soft');
 
             //-> load('hardware_version','/api/model_hardware_versions')
 
-            $form->select('soft_version',trans('order.soft_version')) ->rules('required');
+            $form->select('soft_version', trans('order.soft_version'))->rules('required');
 
-            $form->select('hardware_version',trans('order.hardware_version'))->rules('required');
+            $form->text('hardware_version', trans('order.hardware_version'))->rules('required');
 
-            $lastImei = str_pad_dechex_0(Device::orderBy('imei1','desc')->value('imei1') + 1,15) ;
 
-            $lastMacWifi =  $this->generateMac(Device::orderBy('mac_wifi','desc')->value('mac_wifi'),1);
-            $lastBTWifi =  $this->generateMac(Device::orderBy('mac_bluetooth','desc')->value('mac_bluetooth'),1);
+            /// IMEI 由 15 位数字组成。 AAAAAA BBBB CCCC D
+            /// AAAAAA 6位： TAG为设备型号 定义为 865xx1  xx 表示设备型号代码
+            /// BBBB   4位： 生产日期      定义为 YYWW
+            /// CCCC   4位： 设备流水号    从0001开始 +1 计数
+            /// D      1位： 校验号        0 - 9
 
-            $form->text('imei_start',trans('order.imei_start'))->value($lastImei)->rules('required|max:15|min:15');
-            $form->text('mac_wifi_start',trans('order.mac_wifi_start'))->value($lastMacWifi)->rules('required|regex:/^[A-Za-z0-9]{2}:[A-Za-z0-9]{2}:[A-Za-z0-9]{2}:[A-Za-z0-9]{2}/');
-            $form->text('mac_bluetooth_start',trans('order.mac_bluetooth_start'))->value($lastBTWifi)->rules('required|regex:/^[A-Za-z0-9]{2}:[A-Za-z0-9]{2}:[A-Za-z0-9]{2}:[A-Za-z0-9]{2}/');
+            $lastImei = Device::orderBy('imei1', 'desc')->value('imei1');
 
-//            $form->saving(function (Form $form) {
-//
-//                // 抛出错误信息
-//                $success = new MessageBag([
-//                    'title'   => '标题',
-//                    'message' => '错误信息',
-//                ]);
-//
-//                return back()->with(compact('success'));
-//            });
+            $lastImei = $this->generateIMEI('01');
+
+
+            $lastMacWifi = $this->generateMac(Device::orderBy('mac_wifi', 'desc')->value('mac_wifi'), 1);
+            $lastBTWifi = $this->generateMac(Device::orderBy('mac_bluetooth', 'desc')->value('mac_bluetooth'), 1);
+
+            $form->text('imei_start', trans('order.imei_start'))->value($lastImei)->rules('required|max:15|min:15');
+            $form->text('mac_wifi_start', trans('order.mac_wifi_start'))->value($lastMacWifi)->rules('required|regex:/^([A-Za-z0-9]{2}:){5}[A-Za-z0-9]{2}/');
+            $form->text('mac_bluetooth_start', trans('order.mac_bluetooth_start'))->value($lastBTWifi)->rules('required|regex:/^[A-Za-z0-9]{2}:[A-Za-z0-9]{2}:[A-Za-z0-9]{2}:[A-Za-z0-9]{2}:[A-Za-z0-9]{2}:[A-Za-z0-9]{2}/');
+
             $form->saved(function (Form $form) {
                 // 保存后回调
-                // 创建设备
-                $model = $form->model();
-                $id = $model->id ;
-                $number = $model->number ;
-                $dev_model_id = $model->dev_model_id ;
-                $soft_version = $model->soft_version ;
-                $hardware_version = $model->hardware_version ;
-                $imei_start = $model->imei_start ;
-                $mac_wifi_start = $model->mac_wifi_start ;
-                $mac_bluetooth_start = $model->mac_bluetooth_start ;
-
-                for($i = 0; $i < $model->sum; $i++) {
-
-                    Device::create([
-                        'sn' => $number.''.$i,
-                        'order_id' => $id,
-                        'soft_version' => $soft_version,
-                        'hardware_version' => $hardware_version,
-                        'dev_model_id' => $dev_model_id,
-
-                        'imei1' => str_pad_dechex_0($imei_start + $i,15) ,
-                        //'imei2' => $imei_start,
-                        'mac_wifi' => $this->generateMac($mac_wifi_start,$i + 1),
-                        'mac_bluetooth' => $this->generateMac($mac_bluetooth_start,$i + 1),
-
-                    ]);
-
-                }
-
-
 
             });
-
 
 
         });
     }
 
 
-
-
-
-
-    private function generateMac($start , $index = 0){
-        $nums = explode(":",$start);
+    private function generateMac($start, $index = 0)
+    {
+        $nums = explode(":", $start);
         if ($nums || $nums->sum != 4) {
-            $nums = [0x00,0x00,0x00,0x00] ;
+            $nums = [0x00, 0x00, 0x00, 0x00];
         }
 
         // 取出 每一位 并转换成 十进制
         $first = hexdec($nums[0]);
         $second = hexdec($nums[1]);
         $third = hexdec($nums[2]);
-        $last = hexdec($nums[3]);
+        $four = hexdec($nums[3]);
+        $five = hexdec($nums[4]);
+        $last = hexdec($nums[5]);
 
         // 大于 最大值 则取下一位、
-        if ( ($last + $index ) > 255 ){
-            $last = 255 ;
+        if (($last + $index) > 255) {
+            $last = 255;
 
             // 大于 最大值 则取下一位、
-            if ( ($third + $index ) > 255 ){
-                $third = 255 ;
+            if (($third + $index) > 255) {
+                $third = 255;
 
                 // 大于 最大值 则取下一位、
-                if ( ($second + $index ) > 255 ){
-                    $second = 255 ;
+                if (($second + $index) > 255) {
+                    $second = 255;
 
                     // 大于 最大值 则取下一位、
-                    if ( ($first + $index ) > 255 ){
-                        $first = 255 ;
+                    if (($first + $index) > 255) {
+                        $first = 255;
+                    } else {
+                        $first = $first + $index;
                     }
-                    else {
-                        $first = $first + $index ;
-                    }
+                } else {
+                    $second = $second + $index;
                 }
-                else {
-                    $second = $second + $index ;
-                }
-            }
-            else {
-                $third = $third + $index ;
+            } else {
+                $third = $third + $index;
             }
 
-        }
-        else {
-            $last = $last + $index ;
+        } else {
+            $last = $last + $index;
         }
 
 
-
-        return str_pad_dechex_0($first).':'.str_pad_dechex_0($second).':'.str_pad_dechex_0($third).':'.str_pad_dechex_0($last) ;
+        return str_pad_dechex_0($first) . ':' . str_pad_dechex_0($second) . ':' . str_pad_dechex_0($third) . ':'. str_pad_dechex_0($four) . ':'. str_pad_dechex_0($five) . ':' . str_pad_dechex_0($last);
 
     }
 
 
+    /// IMEI 由 15 位数字组成。 AAAAAA BBBB CCCC D
+    /// AAAAAA 6位： TAG为设备型号 定义为 865xx1  xx 表示设备型号代码
+    /// BBBB   4位： 生产日期      定义为 YYWW
+    /// CCCC   4位： 设备流水号    从0001开始 +1 计数
+    /// D      1位： 校验号        0 - 9
+    private function generateIMEI($model_num)
+    {
+        $a = '865' . str_pad($model_num, 2, '0', STR_PAD_LEFT) . '1';
+        $b = gmstrftime('YYWW');
+        $c = '0001';
+        /*
+        * IMEI校验码算法：
+        * (1).将偶数位数字分别乘以2，分别计算个位数和十位数之和
+        * (2).将奇数位数字相加，再加上上一步算得的值
+        * (3).如果得出的数个位是0则校验位为0，否则为10减去个位数
+        */
+        $imei_14 = $a.$b.$c ;
+        $array = str_split($imei_14);
 
+        $d = 0 ;
+
+        for ($i = 0 ; $i < $array->count; $i ++ ){
+            $value_i = $array[$i] ;
+            $i++ ;
+            $temp = $value_i * 2 ;
+            $temp = $temp < 10 ? $temp : $temp-9;
+            $d += $value_i+b;
+        }
+        $d %= 10 ;
+        $d = $d==0 ? 0:10-$d;
+
+        return $imei_14.$d ;
+    }
 
 
 }
-function str_pad_dechex_0($input , $length = 2,$pad_type = STR_PAD_LEFT){
-    return str_pad(dechex($input),$length,"0",$pad_type);
+
+function str_pad_dechex_0($input, $length = 2, $pad_type = STR_PAD_LEFT)
+{
+    return str_pad(dechex($input), $length, "0", $pad_type);
 }
 
 
