@@ -73,6 +73,8 @@ before_script:
   # - php artisan db:seed
 
 release:
+  tags:
+    - productManager
   script:
   # run laravel tests
   # - php vendor/bin/phpunit --coverage-text --colors=never
