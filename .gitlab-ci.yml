@@ -10,8 +10,8 @@ services:
   - mysql:latest
 
 variables:
-  MYSQL_DATABASE: project_name
-  MYSQL_ROOT_PASSWORD: secret
+  MYSQL_DATABASE: horzon_ota_upgrade
+  MYSQL_ROOT_PASSWORD: 123456
 
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
@@ -45,7 +45,7 @@ before_script:
 
   # Install Node dependencies.
   # comment this out if you don't have a node dependency
-  - npm install
+  # - npm install
 
   # Copy over testing configuration.
   # Don't forget to set the database config in .env.testing correctly
@@ -59,25 +59,33 @@ before_script:
   # comment this out if you don't have a frontend build
   # you can change this to to your frontend building script like
   # npm run build
-  - npm run dev
+  #- npm run dev
 
   # Generate an application key. Re-cache.
   - php artisan key:generate
-  - php artisan config:cache
+  #  - php artisan config:cache
+  - php artisan down
 
   # Run database migrations.
-  - php artisan migrate
+  #- php artisan migrate
 
   # Run database seed
-  - php artisan db:seed
+  # - php artisan db:seed
 
-test:
+release:
   script:
   # run laravel tests
-  - php vendor/bin/phpunit --coverage-text --colors=never 
+  # - php vendor/bin/phpunit --coverage-text --colors=never
 
   # run frontend tests
   # if you have any task for testing frontend
   # set it in your package.json script
   # comment this out if you don't have a frontend test
-  - npm test
+  # - npm test
+
+  - php artisan clear-compiled
+  - php artisan cache:clear
+  - php artisan config:cache
+
+  #关闭维护状态，更新完毕
+  - php artisan up
