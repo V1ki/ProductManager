@@ -42,8 +42,8 @@ before_script:
   # Install Composer and project dependencies.
   #  - curl -sS https://getcomposer.org/installer | php
   #  - php composer.phar install
-    - composer install --no-dev
-    
+  - composer install --no-dev
+
 
   # Install Node dependencies.
   # comment this out if you don't have a node dependency
