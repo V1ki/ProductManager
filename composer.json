@@ -9,7 +9,8 @@
         "barryvdh/laravel-ide-helper": "^2.4",
         "encore/laravel-admin": "1.5.*",
         "laravel-admin-ext/helpers": "^1.0",
-        "laravel-admin-ext/log-viewer": "^1.0"
+        "laravel-admin-ext/log-viewer": "^1.0",
+        "maatwebsite/excel": "^3.0"
     },
     "require-dev": {
         "filp/whoops": "~2.0",
