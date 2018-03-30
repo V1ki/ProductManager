@@ -100,7 +100,7 @@ class OrderController extends Controller
 
             $form->number('sum', trans('order.sum'))->rules('required');
 
-            $form->date('order_time', trans('order.order_time'));
+            $form->date('order_time', trans('order.order_time'))->value(gmstrftime('%Y-%m-%d'));
 
 
             $form->select('sh_name_id', trans('order.sh_name_id'))->options('/api/allSHInfos')->load('customer_id', '/api/customer');
