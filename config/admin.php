@@ -140,7 +140,7 @@ return [
     |               | sidebar-mini                            |
     |---------------------------------------------------------|
      */
-    'layout' => ['sidebar-mini', 'sidebar-collapse'],
+    'layout' => ['sidebar-collapse', 'sidebar-mini'],
 
     /*
      * Version displayed in footer.

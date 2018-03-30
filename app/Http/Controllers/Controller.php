@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Device;
 use App\DevModel;
+use App\Order;
 use App\UpgradePackage;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
@@ -45,4 +47,21 @@ class Controller extends BaseController
         $id = $request->get('q');
         return UpgradePackage::where('dev_model_id',$id)->get([DB::raw('package_id as id'),DB::raw('package_hwver as text')]);
     }
+
+
+    public function getDeviceInfo(Request $request) {
+        $sn = $request->get('sn');
+        return Device::where('sn',$sn);
+    }
+
+    public function createDevice(Request $request) {
+        // 订单号
+        $orderNo = $request->get('order');
+
+        $order = Order::where('number',$orderNo);
+        // 通过订单号 生成
+        return $order;
+
+    }
+
 }

@@ -25,3 +25,6 @@ Route::get('/dev_model', 'Controller@dev_model');
 
 /// 获取 设备型号 中的版本
 Route::get('/model_versions', 'Controller@model_versions');
+
+/// 生成设备
+Route::get('/device/create', 'Controller@createDevice');
