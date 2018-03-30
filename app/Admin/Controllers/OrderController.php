@@ -92,7 +92,7 @@ class OrderController extends Controller
     {
         return Admin::form(Order::class, function (Form $form) {
 
-            $form->model()->number = gmstrftime('YYWW').'0001';
+            $form->model()->number = gmstrftime('%g%W').'0001';
             $form->model()->status = 1;
 
             $form->display('number', trans('order.number'))->value($form->model()->number);
