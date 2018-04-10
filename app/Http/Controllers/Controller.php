@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Device;
-use App\DevModel;
-use App\Order;
-use App\UpgradePackage;
+use App\Models\Device;
+use App\Models\DeviceExtInfo;
+use App\Models\DevModel;
+use App\Models\Order;
+use App\Models\UpgradePackage;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-use App\SHAdmin ;
-use App\Customers ;
+use App\Models\SHAdmin ;
+use App\Models\Customers ;
 use Illuminate\Support\Facades\DB;
 
 class Controller extends BaseController
@@ -29,6 +30,7 @@ class Controller extends BaseController
     public function customer(Request $request){
         // `customer_id`,`customer_name`
         $id = $request->get('q');
+
         return Customers::where('sh_name_id',$id)->get([DB::raw('customer_id as id'),DB::raw('customer_name as text')]);
     }
     // 设备型号
@@ -42,6 +44,19 @@ class Controller extends BaseController
         $id = $request->get('q');
         return UpgradePackage::where('dev_model_id',$id)->get([DB::raw('package_id as id'),DB::raw('package_version as soft'),DB::raw('package_hwver as hardware')]) ->unique("soft");
     }
+
+    public function packages_version(Request $request){
+        $id = $request->get('q');
+        return UpgradePackage::where('package_id',$id)->get([DB::raw('package_version as soft'),DB::raw('package_hwver as hardware')]);
+
+    }
+
+    public function packages(Request $request) {
+        $id = $request->get('q');
+        return UpgradePackage::where('dev_model_id',$id)->get([DB::raw('package_id as id'),DB::raw('package_file as file'),DB::raw('package_version as soft'),DB::raw('package_hwver as hardware')]);
+
+    }
+
     // 获取设备型号的 硬件版本号
     public function model_hardware_versions(Request $request) {
         $id = $request->get('q');
@@ -57,27 +72,78 @@ class Controller extends BaseController
     public function createDevice(Request $request) {
         // 订单号
         $orderNo = $request->get('order');
-        $order = Order::where('number',$orderNo)->first();
+        $order = Order::where('order_number',$orderNo)->first();
         if( $order == null) {
             return "23";
         }
 
 
-        $device = Device::create([
-            'sn' => 'sn_test',
-            'order_id' => $orderNo,
-            'soft_version' => $order->soft_version,
-            'hardware_version' => $order->hardware_version,
-            'dev_model_id' => $order->dev_model_id,
-            'imei1' => str_pad_dechex_0($order->imei_start + 0,15) ,
-            //'imei2' => $imei_start,
-            'mac_wifi' => $this->generateMac($order->mac_wifi_start, 1),
-            'mac_bluetooth' => $this->generateMac($order->mac_bluetooth_start,1),
-        ]);
+        /*
+        +---------------------+--------------+------+-----+-------------------+-----------------------------+
+        | Field               | Type         | Null | Key | Default         | Extra                       |
+        +---------------------+--------------+------+-----+-------------------+-----------------------------+
+        | device_info_id      | bigint(20)   | NO   | PRI |                   | auto_increment              |
+        | dev_id              | varchar(100) | YES  |     |                   |                             |
+        | imei                | varchar(100) | NO   |     |                   |                             |
+        | dev_model_id        | varchar(100) | YES  |     |                   |                             |
+        | sh_name_id          | int(11)      | NO   |     |                   |                             |
+        | vehicle_num         | varchar(128) | YES  |     |                   |                             |
+        | softwareversion     | varchar(100) | YES  |     |                   |                             |
+        | hardwareversion     | varchar(100) | YES  |     |                   |                             |
+        | iccid               | varchar(100) | YES  |     |                   |                             |
+        | phone_num           | varchar(100) | YES  |     |                   |                             |
+        | customer_id         | int(11)      | YES  |     |                   |                             |
+        | no_boot             | int(2)       | NO   |     | 0                 |                             |
+        | mod_time            | timestamp    | NO   |     | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |
+        | log_upload_flag     | int(11)      | NO   |     | 0                 |                             |
+        | log_upload_protocol | int(11)      | NO   |     | 0                 |                             |
+        | reboot_reason_code  | int(11)      | NO   |     | 0                 |                             |
+        | reboot_num          | int(11)      | NO   |     | 0                 |                             |
+        +---------------------+--------------+------+-----+-------------------+-----------------------------+
+         */
+
+        $count = DeviceExtInfo::where('order_id', $order->order_id)->count();
+        if ($count == $order->order_sum) {
+            // 已经创建了足够的设备.
+            return ['code' => -1 , 'msg' => '入库设备已经达到订单数量!!!'];
+        }
+
+
+        $imei = mb_substr($order->imei_start,0,14);
+
+
+        $imei_14 = intval($imei) + $count ;
+        $imei = $this->genrateIMEI($imei_14) ;
+
+
 
 
         // 通过订单号 生成
-        return $device ;
+        $device = Device::create([
+            'softwareversion' => $order->soft_version,
+            'hardwareversion' => $order->hardware_version,
+            'dev_model_id' => $order->dev_model_id,
+            'sh_name_id' => $order->sh_name_id,
+            'customer_id' => $order->customer_id,
+            'imei' => $imei
+        ]);
+
+/*
+
+ $table->increments('device_ext_info_id')->comment('设备额外信息id');
+                $table->integer('device_info_id')->unique()->comment('设备id');
+                $table->integer('order_id')->comment('订单id');
+                $table->string('mac_wifi',30)->comment('设备wifi 的mac地址');
+                $table->string('mac_bt',30)->comment('设备 蓝牙 的mac地址');
+ * */
+        $extInfo = DeviceExtInfo::create([
+            'order_id' => $order->order_id,
+            'device_info_id' => $device->device_info_id ,
+            'mac_wifi' => $order->wifi_mac_start,
+            'mac_bt' => $order->bt_mac_start
+        ]);
+
+        return ['code' => 0 ,'device'=>$device ,'order_left' => ( $order->order_sum - $count - 1)  ,'ext_info' => $extInfo] ;
 
     }
 
@@ -85,7 +151,7 @@ class Controller extends BaseController
     private function generateMac($start, $index = 0)
     {
         $nums = explode(":", $start);
-        if ($nums || $nums->sum != 4) {
+        if ($nums || $nums->sum != 6) {
             $nums = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
         }
 
@@ -132,7 +198,23 @@ class Controller extends BaseController
     }
 
 
+    private function genrateIMEI($imei_14){
+        $array = str_split($imei_14);
 
+        $d = 0 ;
+
+        for ($i = 0 ; $i < count($array); $i ++ ){
+            $value_i = $array[$i] ;
+            $i++ ;
+            $temp = $value_i * 2 ;
+            $temp = $temp < 10 ? $temp : $temp-9;
+            $d += $value_i+$temp;
+        }
+        $d %= 10 ;
+        $d = $d==0 ? 0:10-$d;
+
+        return $imei_14.$d ;
+    }
 }
 
 function str_pad_dechex_0($input, $length = 2, $pad_type = STR_PAD_LEFT)

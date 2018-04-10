@@ -2,7 +2,7 @@
 
 namespace App\Admin\Controllers;
 
-use App\Device;
+use App\Models\Device;
 
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -73,12 +73,56 @@ class DeviceController extends Controller
     {
         return Admin::grid(Device::class, function (Grid $grid) {
 
-            $grid->column('sn',trans('device.sn'));
-            $grid->column('soft_version',trans('device.soft_version'));
-            $grid->column('hardware_version',trans('device.hardware_version'));
-            $grid->column('mac_wifi',trans('device.mac_wifi'));
-            $grid->column('mac_bluetooth',trans('device.mac_bluetooth'));
-            $grid->column('imei1',trans('device.imei'));
+/*
++---------------------+--------------+------+-----+-------------------+-----------------------------+
+| Field               | Type         | Null | Key | Default         | Extra                       |
++---------------------+--------------+------+-----+-------------------+-----------------------------+
+| device_info_id      | bigint(20)   | NO   | PRI |                   | auto_increment              |
+| dev_id              | varchar(100) | YES  |     |                   |                             |
+| imei                | varchar(100) | NO   |     |                   |                             |
+| dev_model_id        | varchar(100) | YES  |     |                   |                             |
+| sh_name_id          | int(11)      | NO   |     |                   |                             |
+| vehicle_num         | varchar(128) | YES  |     |                   |                             |
+| softwareversion     | varchar(100) | YES  |     |                   |                             |
+| hardwareversion     | varchar(100) | YES  |     |                   |                             |
+| iccid               | varchar(100) | YES  |     |                   |                             |
+| phone_num           | varchar(100) | YES  |     |                   |                             |
+| customer_id         | int(11)      | YES  |     |                   |                             |
+| no_boot             | int(2)       | NO   |     | 0                 |                             |
+| mod_time            | timestamp    | NO   |     | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |
+| log_upload_flag     | int(11)      | NO   |     | 0                 |                             |
+| log_upload_protocol | int(11)      | NO   |     | 0                 |                             |
+| reboot_reason_code  | int(11)      | NO   |     | 0                 |                             |
+| reboot_num          | int(11)      | NO   |     | 0                 |                             |
++---------------------+--------------+------+-----+-------------------+-----------------------------+
+ */
+            $grid->disableCreateButton();
+            $grid->column('device_info_id',trans('device.device_info_id'))->sortable();
+            $grid->column('dev_id',trans('device.dev_id'));
+            $grid->column('imei',trans('device.imei'));
+            $grid->column('softwareversion',trans('device.soft_version'));
+            $grid->column('hardwareversion',trans('device.hardware_version'));
+            $grid->column('iccid',trans('device.iccid'));
+            $grid->column('phone_num',trans('device.phone_num'));
+            $grid->column('vehicle_num',trans('device.vehicle_num'));
+
+            $grid->actions(function ($actions){
+                $actions->disableDelete();
+                $actions->append("<a class='device_delete' data-id='{$actions->getKey()}' href=''><i class='fa fa-trash'></i></a>");
+                $script =  <<<SCRIPT
+
+$('.device_delete').on('click', function () {
+
+    // Your code.
+    $.get("/api/device/delete/"+$(this).data('id'), function (data) {
+        toastr.success('删除成功');
+    });
+    
+});
+
+SCRIPT;
+                Admin::script($script);
+            });
 
         });
     }
@@ -92,13 +136,16 @@ class DeviceController extends Controller
     {
         return Admin::form(Device::class, function (Form $form) {
 
-            $form->display('id', 'ID');
-            $form->display('sn',trans('device.sn'));
-            $form->display('soft_version',trans('device.soft_version'));
-            $form->display('hardware_version',trans('device.hardware_version'));
-            $form->display('mac_wifi',trans('device.mac_wifi'));
-            $form->display('mac_bluetooth',trans('device.mac_bluetooth'));
-            $form->display('imei1',trans('device.imei'));
+            $form->display('dev_id',trans('device.dev_id'));
+            $form->display('imei',trans('device.imei'));
+            $form->display('softwareversion',trans('device.soft_version'));
+            $form->display('hardwareversion',trans('device.hardware_version'));
+            $form->display('iccid',trans('device.iccid'));
+            $form->display('phone_num',trans('device.phone_num'));
+            $form->display('vehicle_num',trans('device.vehicle_num'));
+            $form->display('customer_id',trans('device.customer_id'));
+            $form->display('reboot_reason_code',trans('device.reboot_reason_code'));
+            $form->display('reboot_num',trans('device.reboot_num'));
         });
     }
 }

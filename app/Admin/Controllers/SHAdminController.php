@@ -2,7 +2,7 @@
 
 namespace App\Admin\Controllers;
 
-use App\SHAdmin ;
+use App\Models\SHAdmin ;
 
 use Encore\Admin\Form;
 use Encore\Admin\Grid;

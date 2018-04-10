@@ -15,6 +15,9 @@ return [
     'number'       => '订单号',
 
     'sum'          =>'数量',
+    'order_has'   => '已生产',
+    'left'       => '剩余数量',
+
     'order_time'          =>'时间',
     'dev_model_id' => '设备类型',
     'soft_version' => '软件版本',

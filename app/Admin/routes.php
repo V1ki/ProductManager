@@ -11,6 +11,8 @@ Route::group([
 ], function (Router $router) {
 
     $router->get('/', 'HomeController@index');
+
+
     $router->resource('orders',OrderController::class);
     $router->resource('devices',DeviceController::class);
     $router->resource('devModels',DevModelController::class);

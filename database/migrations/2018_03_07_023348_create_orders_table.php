@@ -50,6 +50,10 @@ CREATE TABLE `orders` (
             $table->integer('dev_model_id');
             // 刷机包 id
             $table->integer('package_id');
+            // 软件版本
+            $table->string('soft_version', 30);
+            // 硬件版本
+            $table->string('hardware_version', 30);
             // imei 起始
             $table->string('imei_start', 20);
             // wifi mac 地址 起始

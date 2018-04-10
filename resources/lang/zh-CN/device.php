@@ -19,9 +19,11 @@ return [
     'create_device_desc' => '创建设备',
 
     'sn' => '序列号',
-
+    'imei' => 'imei',
     'soft_version' => '软件版本',
     'hardware_version' => '硬件版本',
+    'vehicle_num' => '车牌号',
+    'phone_num' => '手机号',
 
     // 设备型号
     'model_id'  => '型号ID',
