@@ -74,7 +74,7 @@ class Controller extends BaseController
         $orderNo = $request->get('order');
         $order = Order::where('order_number',$orderNo)->first();
         if( $order == null) {
-            return "23";
+            return  ['code' => -1 , 'msg' => '请核对订单号后再打印条码!!!'];
         }
 
 

@@ -181,6 +181,10 @@ EOT;
                         $actions->disableDelete();
                         $actions->append('订单已完成');
                     }
+
+                    if (!Admin::user()->can('delete-image')) {
+                        $actions->disableDelete();
+                    }
                 });
 
 
