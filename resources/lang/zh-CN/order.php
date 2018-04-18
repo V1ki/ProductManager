@@ -14,9 +14,15 @@ return [
 
     'number'       => '订单号',
 
+
+    'order_id'          =>'id',
     'sum'          =>'数量',
     'order_has'   => '已生产',
     'left'       => '剩余数量',
+
+    'sh_name_id' => '商户',
+    'customer_id' => '客户',
+    'package_id' => 'ROM',
 
     'order_time'          =>'时间',
     'dev_model_id' => '设备类型',

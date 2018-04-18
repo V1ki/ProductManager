@@ -17,7 +17,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return \App\Models\DevModel::all();
 });
 
-
 // 所有商户
 Route::get('/allSHInfos', 'Controller@allSHInfos');
 /// 通过商户获取客户
@@ -33,6 +32,9 @@ Route::get('/packages_version', 'Controller@packages_version');
 
 /// 生成设备
 Route::get('/device/create', 'Controller@createDevice');
+
+// 所有设备
+Route::get('/orders', 'Controller@orders');
 
 Route::get('/device/delete/{device}', function (App\Models\Device $device) {
     $extInfo = App\Models\DeviceExtInfo::where('device_info_id',$device->device_info_id)->first();

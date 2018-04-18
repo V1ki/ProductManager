@@ -19,4 +19,5 @@ Route::group([
 
     $router->resource('shAdmins',SHAdminController::class);
     $router->resource('customers',CustomersController::class);
+    $router->resource('packages',PackageController::class);
 });

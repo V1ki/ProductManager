@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Device;
 use App\Models\DeviceExtInfo;
+use App\Models\DevicePackageInfo;
 use App\Models\DevModel;
 use App\Models\Order;
+use App\Models\Package;
 use App\Models\UpgradePackage;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
@@ -24,6 +26,14 @@ class Controller extends BaseController
     // 所有的商户信息
     public function allSHInfos(){
         return SHAdmin::get([DB::raw('sh_name_id as id'),DB::raw('sh_name as text')]);
+    }
+
+    /**
+     * 所有的订单
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    public function orders(){
+        return Order::all();
     }
 
     //商户下的客户信息
@@ -143,10 +153,58 @@ class Controller extends BaseController
             'mac_bt' => $order->bt_mac_start
         ]);
 
-        return ['code' => 0 ,'device'=>$device ,'order_left' => ( $order->order_sum - $count - 1)  ,'ext_info' => $extInfo] ;
+
+        $left = $order->order_sum - $count - 1 ;
+        if($left == 0){
+            $order->status = 2 ;
+            $order->save();
+        }
+
+        return ['code' => 0 ,'device'=>$device ,'order_left' => $left  ,'ext_info' => $extInfo] ;
 
     }
 
+
+    public function packageDevice(Request $request) {
+        $imei = $request->get('imei');
+        $package_no = $request->get('package_no');
+        $device = Device::find('imei',$imei)->first();
+
+        /**
+         *
+        $table->integer('parent_id')->comment("父id");
+
+        $table->string('package_no',30)->comment('盒子或者箱子的 编号');
+
+        $table->integer('items_count')->comment('盒子里有多少个设备 ,或者箱子里有多少盒子');
+         */
+        $package = Package::create([
+            'items_count'=> 1,
+            'package_no' => $package_no
+        ]);
+
+        /**
+         *
+        $table->integer('package_id')->comment('盒子id');
+
+        $table->integer('device_id')->comment('设备id');
+         */
+        $info = DevicePackageInfo::create([
+            'device_id' => $device->device_id ,
+            'package_id' => $package->package_id ,
+        ]);
+
+        return ['code' => 0 ];
+    }
+
+
+    public function packageBox(Request $request){
+
+        $package_no = $request->get('package_no');
+        $package = Package::find('package_no',$package_no)->first();
+
+
+    }
 
     private function generateMac($start, $index = 0)
     {
